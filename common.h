@@ -22,6 +22,9 @@
 #define Pthread_cond_wait(cond, mutex) \
   assert(pthread_cond_wait(cond, mutex) == 0);
 
+#define mutex_t pthread_mutex_t
+#define cond_t pthread_cond_t
+
 #define Mutex_init(m) assert(pthread_mutex_init(m, NULL) == 0);
 #define Mutex_lock(m) assert(pthread_mutex_lock(m) == 0);
 #define Mutex_unlock(m) assert(pthread_mutex_unlock(m) == 0);
