@@ -7,13 +7,13 @@
 #define MAX 5
 
 int buffer[MAX];
-int fill_tag = 0;
+int fill = 0;
 int use = 0;
 int count = 0;
 
 void put(int value) {
-  buffer[fill_tag] = value;
-  fill_tag = (fill_tag + 1) % MAX;
+  buffer[fill] = value;
+  fill = (fill + 1) % MAX;
   count++;
 }
 
@@ -25,7 +25,7 @@ int get() {
 }
 
 int loops = 10;
-cond_t empty, fill;  // tow condition variable
+cond_t empty, full;  // tow condition variable
 mutex_t mutex;
 
 void* producer(void* arg) {
@@ -34,7 +34,7 @@ void* producer(void* arg) {
     Pthread_mutex_lock(&mutex);
     while (count == MAX) Pthread_cond_wait(&empty, &mutex);
     put(i);
-    Pthread_cond_signal(&fill);
+    Pthread_cond_signal(&full);
     Pthread_mutex_unlock(&mutex);
   }
   return NULL;
@@ -44,7 +44,7 @@ void* consumer(void* arg) {
   int i = 0;
   for (i = 0; i < loops; i++) {
     Pthread_mutex_lock(&mutex);
-    while (count == 0) Pthread_cond_wait(&fill, &mutex);
+    while (count == 0) Pthread_cond_wait(&full, &mutex);
     int tmp = get();
     Pthread_cond_signal(&empty);
     Pthread_mutex_unlock(&mutex);
